@@ -1,4 +1,6 @@
-# Chatter
+# Chatterbox
+
+A websocket based application that allows different channels to be used for home automation tasks.
 
 To start your Phoenix app:
 

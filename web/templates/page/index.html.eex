@@ -10,3 +10,4 @@
   <label>Message</label>
   <input id="message" type="text" class="form-control" />
 </div>
+<a class="button" id="test-switch" href="#">Test Switch</div>

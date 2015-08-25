@@ -23,34 +23,47 @@ import "deps/phoenix_html/web/static/js/phoenix_html"
 
 class App {
     static init() {
-	var username = $("#username")
-	var msgBody = $("#message")
+
 
 	var socket = new Socket("/socket")
 	socket.connect()
 	socket.onClose( e => console.log("Closed Connection") )
+	this.joinLobby(socket)
+	this.joinChannel(socket, "rooms:lights")
+    }
 
-	var channel = socket.channel("rooms:lobby", {} )
+    static joinLobby(socket) {
+	let username = $("#username")
+	let msgBody = $("#message")
+	let channel = socket.channel("rooms:lobby", {} )
 	channel.join()
 	    .receive( "error", () => console.log("Failed to connect") )
 	    .receive( "ok",    () => console.log("Connected") )
 	channel.on( "new:message", msg => this.renderMessage(msg) )
 	msgBody.off("keypress")
-	  .on("keypress", e => {
-	      if (e.keyCode == 13) {
-		  channel.push("new:message", {
-		      user: username.val(),
-		      body: msgBody.val()
-		  })
-		  msgBody.val("")
-	      }
-	  })
+	    .on("keypress", e => {
+		if (e.keyCode == 13) {
+		    channel.push("new:message", {
+			user: username.val(),
+			body: msgBody.val()
+		    })
+		    msgBody.val("")
+		}
+	    })
     }
 
-    static renderMessage(msg) {
-	var messages = $("#messages")
-	var user = this.sanitize(message.user || "New User")
-	var body = this.sanitize(message.body)
+    static joinChannel(socket, channelName) {
+	let channel = socket.channel(channelName, {} )
+	channel.join()
+	    .receive( "error", () => console.log("Failed to connect") )
+	    .receive( "ok",    () => console.log("Connected") )
+	channel.on( "new:message", msg => this.renderMessage(msg) )
+    }
+
+    static renderMessage(message) {
+	let messages = $("#messages")
+	let user = this.sanitize(message.user || "New User")
+	let body = this.sanitize(message.body)
 	messages.append(`<p><b>[${user}]</b>: ${body}</p>`)
     }
 
